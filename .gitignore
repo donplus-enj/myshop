@@ -1,0 +1,38 @@
+# PHP
+vendor/
+composer.lock
+
+# 환경 설정 (중요!)
+config.php
+.env
+database.config.php
+
+# 로그
+logs/
+*.log
+
+# 임시 파일
+temp/
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 업로드 파일
+uploads/
+!uploads/.gitkeep
+
+# 백업 파일
+*.bak
+*.backup
+
+# 데이터베이스 덤프
+*.sql.gz
+*.dump
