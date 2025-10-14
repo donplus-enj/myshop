@@ -16,6 +16,26 @@ $current_user = getLoginUser();
 
 // 페이지 타이틀 (각 페이지에서 $page_title 설정 가능)
 $page_title = $page_title ?? 'MyShop';
+
+// 현재 페이지 경로 (활성 메뉴 표시용)
+$current_page = basename($_SERVER['PHP_SELF']);
+$current_dir = basename(dirname($_SERVER['PHP_SELF']));
+
+/**
+ * 활성 메뉴 체크 함수
+ * @param string $page 페이지명
+ * @param string|null $dir 디렉토리명
+ * @return string 'active' 또는 빈 문자열
+ */
+function isActive($page, $dir = null) {
+    global $current_page, $current_dir;
+    
+    if ($dir) {
+        return ($current_dir === $dir) ? 'active' : '';
+    }
+    
+    return ($current_page === $page) ? 'active' : '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -23,7 +43,10 @@ $page_title = $page_title ?? 'MyShop';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo escape($page_title); ?> - MyShop</title>
-    
+
+	<!-- SVG 이모지 Favicon -->
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
+
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
     

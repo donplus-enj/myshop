@@ -929,6 +929,7 @@ select.form-control {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* 활성 메뉴 스타일 */
 .nav-link.active {
     background-color: rgba(255, 255, 255, 0.3);
     font-weight: 600;
@@ -951,4 +952,19 @@ select.form-control {
 
 .user-info {
     flex-shrink: 0;
+}
+
+/* 사용자 코드 스타일 */
+.user-code {
+    opacity: 0.8;
+    font-size: 13px;
+}
+
+/* 로그아웃 버튼 */
+.btn-logout {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 5px;
+    transition: all 0.3s;
 }
