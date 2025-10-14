@@ -905,3 +905,50 @@ select.form-control {
         border: 1px solid var(--gray-300);
     }
 }
+
+/* ============================================
+   16. header 스타일
+   ============================================ */
+/* 네비게이션 추가 스타일 */
+.main-nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.nav-link {
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+.header-content {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.header-content h1 {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.main-nav {
+    flex-grow: 1;
+}
+
+.user-info {
+    flex-shrink: 0;
+}
