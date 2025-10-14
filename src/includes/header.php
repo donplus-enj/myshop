@@ -78,13 +78,16 @@ function isActive($page, $dir = null) {
                         📦 상품
                     </a>
                     <a href="transactions/in_out.php" class="nav-link">
-                        📊 입출고
+                        🚚 입출고
                     </a>
                     <a href="transactions/history.php" class="nav-link">
-                        📋 거래내역
+                        📋 거래조회
                     </a>
                     <a href="transactions/payment.php" class="nav-link">
-                        💰 수금/지급
+                        💰 입금/지출
+                    </a>
+                    <a href="report.php" class="nav-link">
+                        📊 통계/집계
                     </a>
                 </nav>
                 

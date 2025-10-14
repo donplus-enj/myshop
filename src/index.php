@@ -21,7 +21,7 @@ if (!isLoggedIn()) {
 <!-- 환영 메시지 -->
 <div class="welcome-card">
     <h2>환영합니다! 🎉</h2>
-    <p>MyShop 재고관리 및 거래처 관리 시스템</p>
+    <p>MyShop 상품 재고 및 거래처 관리 시스템</p>
 </div>
 
 <!-- 메뉴 그리드 -->
@@ -53,7 +53,7 @@ if (!isLoggedIn()) {
     <!-- 거래내역 조회 -->
     <a href="transactions/history.php" class="menu-card disabled">
         <div class="icon">📋</div>
-        <h3>거래내역</h3>
+        <h3>거래조회</h3>
         <p>거래내역 조회 및 출력</p>
         <span class="coming-soon">준비중</span>
     </a>
@@ -61,16 +61,16 @@ if (!isLoggedIn()) {
     <!-- 수금/지급 관리 -->
     <a href="transactions/payment.php" class="menu-card disabled">
         <div class="icon">💰</div>
-        <h3>수금/지급</h3>
-        <p>수금 및 지급 관리</p>
+        <h3>입금/지출</h3>
+        <p>입금(수금) 및 지출(지급) 관리</p>
         <span class="coming-soon">준비중</span>
     </a>
     
     <!-- 통계/보고서 -->
     <a href="reports.php" class="menu-card disabled">
         <div class="icon">📈</div>
-        <h3>통계/보고서</h3>
-        <p>각종 통계 및 보고서</p>
+        <h3>통계/집계</h3>
+        <p>각종 통계/집계 보고서</p>
         <span class="coming-soon">준비중</span>
     </a>
 </div>

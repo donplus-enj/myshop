@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-container">
         <div class="login-header">
             <h1>🏪 MyShop</h1>
-            <p>재고관리 및 거래처 관리 시스템</p>
+            <p>상품 재고 및 거래처 관리 시스템</p>
         </div>
         
         <?php if ($error_message): ?>
