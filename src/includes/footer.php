@@ -22,7 +22,7 @@
     </footer>
     
     <!-- JavaScript 파일 로드 -->
-    <script src="assets/js/script.js"></script>
+    <script src="<?php echo $base_path; ?>assets/js/script.js"></script>
     
     <!-- 페이지별 추가 스크립트 -->
     <?php if (isset($extra_scripts)): ?>
