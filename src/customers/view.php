@@ -49,33 +49,6 @@ $stats = $stats_result['success'] ? $stats_result['data'] : array(
     'total_payment' => 0
 );
 
-/**
- * DateTime 포맷 함수
- */
-function formatDateTime($datetime) {
-    if (empty($datetime)) return '-';
-    
-    if ($datetime instanceof DateTime) {
-        return $datetime->format('Y-m-d H:i');
-    }
-    
-    if (is_string($datetime)) {
-        $timestamp = strtotime($datetime);
-        if ($timestamp !== false) {
-            return date('Y-m-d H:i', $timestamp);
-        }
-    }
-    
-    return '-';
-}
-
-/**
- * 값이 비어있으면 대체 텍스트 반환
- */
-function displayValue($value, $default = '-') {
-    return !empty($value) ? escape($value) : '<span class="text-muted">' . $default . '</span>';
-}
-
 require_once '../includes/header.php';
 ?>
 
@@ -100,19 +73,19 @@ require_once '../includes/header.php';
 <?php if ($stats['total_transactions'] > 0): ?>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
     <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <div class="stat-value"><?php echo number_format($stats['total_transactions']); ?>건</div>
+        <div class="stat-value"><?php echo formatNumber($stats['total_transactions']); ?>건</div>
         <div class="stat-label">총 거래건수</div>
     </div>
     <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-        <div class="stat-value"><?php echo number_format($stats['total_in']); ?>원</div>
+        <div class="stat-value"><?php echo formatCurrency($stats['total_in']); ?></div>
         <div class="stat-label">입고 총액</div>
     </div>
     <div class="stat-card" style="background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);">
-        <div class="stat-value"><?php echo number_format($stats['total_out']); ?>원</div>
+        <div class="stat-value"><?php echo formatCurrency($stats['total_out']); ?></div>
         <div class="stat-label">출고 총액</div>
     </div>
     <div class="stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #20c9e3 100%);">
-        <div class="stat-value"><?php echo number_format($stats['total_receive']); ?>원</div>
+        <div class="stat-value"><?php echo formatCurrency($stats['total_receive']); ?></div>
         <div class="stat-label">수금 총액</div>
     </div>
 </div>
@@ -280,14 +253,14 @@ require_once '../includes/header.php';
         <div>
             <div class="info-label">등록일시</div>
             <div class="info-value">
-                🕐 <?php echo formatDateTime($customer['created_at']); ?>
+                🕐 <?php echo formatDateTimeWithTime($customer['created_at']); ?>
             </div>
         </div>
         
         <div>
             <div class="info-label">수정일시</div>
             <div class="info-value">
-                🕐 <?php echo formatDateTime($customer['updated_at']); ?>
+                🕐 <?php echo formatDateTimeWithTime($customer['updated_at']); ?>
             </div>
         </div>
     </div>

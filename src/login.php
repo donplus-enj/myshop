@@ -64,13 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $error_message = '비밀번호를 입력해주세요.';
                     }
 
-                    // 암호화된 비밀번호와 비교
-                    /*
-					if (password_verify($password, $db_password)) {
-						// 로그인 성공 (DB에 password가 암호화된 상태인 경우)
-						$login_allowed = true;
-					} else
-					*/
+                    // 평문 비교 (보안 문제 있음, 아래 password_verify() 함수 사용을 권장)
+					//if (password_verify($password, $db_password)) {
 					if ($password === $db_password) {
 						// 로그인 성공 (DB에 password가 암호화되지 않은 상태인 경우)
                         $login_allowed = true;

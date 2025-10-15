@@ -27,11 +27,10 @@ if (!isLoggedIn()) {
 <!-- 메뉴 그리드 -->
 <div class="menu-grid">
     <!-- 거래처 관리 -->
-    <a href="customers/list.php" class="menu-card disabled">
+    <a href="customers/list.php" class="menu-card">
         <div class="icon">🏢</div>
         <h3>거래처 관리</h3>
         <p>거래처 등록 및 관리</p>
-        <span class="coming-soon">준비중</span>
     </a>
     
     <!-- 상품 관리 -->

@@ -7,6 +7,7 @@
 // 세션 및 DB 연결
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/session.php';
+require_once __DIR__ . '/functions.php';
 
 // 로그인 필수 페이지에서 사용
 // requireLogin(); // 필요한 페이지에서 개별 호출
@@ -20,6 +21,42 @@ $page_title = $page_title ?? 'MyShop';
 // 현재 페이지 경로 (활성 메뉴 표시용)
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir = basename(dirname($_SERVER['PHP_SELF']));
+
+/**
+ * 루트 경로 계산
+ * 현재 파일의 위치에 따라 루트까지의 상대 경로 반환
+ */
+function getBasePath() {
+    // 현재 스크립트의 경로 가져오기
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    
+    // '/src/' 기준으로 분리
+    $parts = explode('/', trim($script_path, '/'));
+    
+    // 'src' 이후의 depth 계산
+    $depth = 0;
+    $found_src = false;
+    foreach ($parts as $part) {
+        if ($found_src && !empty($part)) {
+            $depth++;
+        }
+        if ($part === 'src') {
+            $found_src = true;
+        }
+    }
+    
+    // depth에 따라 '../' 반복
+    if ($depth === 0) {
+        return './';
+    } elseif ($depth === 1) {
+        return '../';
+    } else {
+        return str_repeat('../', $depth - 1);
+    }
+}
+
+// 기본 경로 설정
+$base_path = getBasePath();
 
 /**
  * 활성 메뉴 체크 함수
@@ -48,12 +85,12 @@ function isActive($page, $dir = null) {
 	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/style.css">
     
     <!-- 페이지별 추가 CSS -->
     <?php if (isset($extra_css)): ?>
         <?php foreach ($extra_css as $css): ?>
-            <link rel="stylesheet" href="<?php echo $css; ?>">
+            <link rel="stylesheet" href="<?php echo $base_path . $css; ?>">
         <?php endforeach; ?>
     <?php endif; ?>
 </head>
@@ -62,31 +99,31 @@ function isActive($page, $dir = null) {
     <div class="header">
         <div class="header-content">
             <h1>
-                <a href="index.php">🏪 MyShop</a>
+                <a href="<?php echo $base_path; ?>index.php">🏪 MyShop</a>
             </h1>
             
             <?php if (isLoggedIn()): ?>
                 <!-- 메인 네비게이션 -->
                 <nav class="main-nav">
-                    <a href="index.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>index.php" class="nav-link <?php echo isActive('index.php'); ?>">
                         🏠 홈
                     </a>
-                    <a href="customers/list.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>customers/list.php" class="nav-link <?php echo isActive('list.php', 'customers'); ?>">
                         🏢 거래처
                     </a>
-                    <a href="products/list.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>products/list.php" class="nav-link <?php echo isActive('list.php', 'products'); ?>">
                         📦 상품
                     </a>
-                    <a href="transactions/in_out.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>transactions/in_out.php" class="nav-link <?php echo isActive('in_out.php', 'transactions'); ?>">
                         🚚 입출고
                     </a>
-                    <a href="transactions/history.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>transactions/history.php" class="nav-link <?php echo isActive('history.php', 'transactions'); ?>">
                         📋 거래조회
                     </a>
-                    <a href="transactions/payment.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>transactions/payment.php" class="nav-link <?php echo isActive('payment.php', 'transactions'); ?>">
                         💰 입금/지출
                     </a>
-                    <a href="report.php" class="nav-link">
+                    <a href="<?php echo $base_path; ?>report.php" class="nav-link <?php echo isActive('report.php'); ?>">
                         📊 통계/집계
                     </a>
                 </nav>
@@ -97,7 +134,7 @@ function isActive($page, $dir = null) {
                         👤 <?php echo escape($current_user['user_name']); ?>
                         (<?php echo escape($current_user['user_code']); ?>)
                     </span>
-                    <a href="logout.php" class="btn btn-light btn-sm">
+                    <a href="<?php echo $base_path; ?>logout.php" class="btn btn-light btn-sm">
                         로그아웃
                     </a>
                 </div>

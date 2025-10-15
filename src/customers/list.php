@@ -44,31 +44,6 @@ $query .= " ORDER BY customer_code DESC";
 $result = fetchAll($query, $params);
 $customers = $result['success'] ? $result['data'] : array();
 
-/**
- * DateTime 안전 포맷 함수
- * MSSQL datetime을 문자열로 변환
- */
-function formatDateTime($datetime) {
-    if (empty($datetime)) {
-        return '';
-    }
-    
-    // DateTime 객체인 경우
-    if ($datetime instanceof DateTime) {
-        return $datetime->format('Y-m-d');
-    }
-    
-    // 문자열인 경우
-    if (is_string($datetime)) {
-        $timestamp = strtotime($datetime);
-        if ($timestamp !== false) {
-            return date('Y-m-d', $timestamp);
-        }
-    }
-    
-    return '';
-}
-
 require_once '../includes/header.php';
 ?>
 

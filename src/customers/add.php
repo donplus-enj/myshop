@@ -303,14 +303,43 @@ include '../includes/header.php';
 <script>
 // 실시간 코드 중복 체크
 let checkTimeout;
-document.getElementById('customer_code').addEventListener('input', function() {
+const customerCodeInput = document.getElementById('customer_code');
+const feedbackDiv = document.createElement('div');
+feedbackDiv.id = 'code-feedback';
+customerCodeInput.parentNode.appendChild(feedbackDiv);
+
+customerCodeInput.addEventListener('input', function() {
     clearTimeout(checkTimeout);
     const code = this.value.trim();
     
+    // 입력값 초기화
+    this.classList.remove('is-valid', 'is-invalid');
+    feedbackDiv.className = '';
+    feedbackDiv.textContent = '';
+    
     if (code.length === 4 && /^[0-9]{4}$/.test(code)) {
         checkTimeout = setTimeout(function() {
-            // AJAX로 중복 체크 (실제 구현 시)
-            console.log('코드 중복 체크:', code);
+            // AJAX 요청
+            fetch('check_code.php?code=' + code)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.isDuplicate) {
+                            customerCodeInput.classList.add('is-invalid');
+                            feedbackDiv.className = 'invalid-feedback';
+                            feedbackDiv.style.display = 'block';
+                            feedbackDiv.textContent = '⚠️ ' + data.message;
+                        } else {
+                            customerCodeInput.classList.add('is-valid');
+                            feedbackDiv.className = 'valid-feedback';
+                            feedbackDiv.style.display = 'block';
+                            feedbackDiv.textContent = '✅ ' + data.message;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('코드 중복 체크 실패:', error);
+                });
         }, 500);
     }
 });
