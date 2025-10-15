@@ -4,6 +4,11 @@
  * 모든 페이지에서 include하여 사용
  */
 
+// 보안 상수 정의
+if (!defined('MYSHOP_APP')) {
+    define('MYSHOP_APP', true);
+}
+
 // 세션 및 DB 연결
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/session.php';

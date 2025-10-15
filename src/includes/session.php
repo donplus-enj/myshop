@@ -1,4 +1,3 @@
-<artifact identifier="myshop-session-complete" type="application/vnd.ant.code" language="php" title="session.php - 완전한 세션 관리">
 <?php
 /**
  * MyShop - 세션 관리
@@ -63,6 +62,17 @@ function logout() {
 }
 
 /**
+ * 세션 완전 파괴 (쿠키 포함)
+ */
+function destroySession() {
+    $_SESSION = array();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 42000, '/');
+    }
+    session_destroy();
+}
+
+/**
  * 세션 타임아웃 체크 (30분)
  */
 function checkSessionTimeout() {
@@ -80,14 +90,5 @@ function checkSessionTimeout() {
 // 로그인한 페이지에서는 자동으로 타임아웃 체크
 if (isLoggedIn()) {
     checkSessionTimeout();
-
-}
-
-function destroySession() {
-    $_SESSION = array();                           // 세션 변수 초기화
-    if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), '', time() - 42000, '/');  // 쿠키 삭제
-    }
-    session_destroy();                             // 세션 파괴
 }
 ?>
