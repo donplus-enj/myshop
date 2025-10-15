@@ -31,7 +31,7 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
  * 루트 경로 계산
  * 현재 파일의 위치에 따라 루트까지의 상대 경로 반환
  */
-function getBasePath() {
+function getBasePath_old() {
     // 현재 스크립트의 경로 가져오기
     $script_path = $_SERVER['SCRIPT_NAME'];
     
@@ -58,6 +58,35 @@ function getBasePath() {
     } else {
         return str_repeat('../', $depth - 1);
     }
+}
+
+/**
+ * 루트 경로 계산
+ * 현재 파일의 위치에 따라 루트까지의 상대 경로 반환
+ */
+function getBasePath() {
+    $script_name = $_SERVER['SCRIPT_NAME'];
+    
+    // '/src/' 이후의 경로 추출
+    $src_pos = strpos($script_name, '/src/');
+    
+    if ($src_pos !== false) {
+        // '/src/' 다음부터 끝까지 추출
+        $after_src = substr($script_name, $src_pos + 5); // '/src/' = 5글자
+        
+        // 디렉토리 깊이 계산 (파일명은 제외)
+        $path_parts = explode('/', $after_src);
+        array_pop($path_parts); // 마지막 요소(파일명) 제거
+        
+        // 빈 문자열 제외하고 카운트
+        $depth = count(array_filter($path_parts));
+        
+        if ($depth > 0) {
+            return str_repeat('../', $depth);
+        }
+    }
+    
+    return './';
 }
 
 // 기본 경로 설정
