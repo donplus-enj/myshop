@@ -1,4 +1,3 @@
-<artifact identifier="myshop-login-page-updated" type="application/vnd.ant.code" language="php" title="login.php - 로그인 페이지">
 <?php
 /**
  * MyShop - 로그인 페이지
