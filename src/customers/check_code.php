@@ -1,6 +1,6 @@
 <?php
 /**
- * MyShop - 거래처 코드 중복 체크 API
+ * MyShop - 상품 코드 중복 체크 API
  * AJAX 요청으로 사용
  */
 
@@ -58,7 +58,7 @@ if (!empty($current_code) && $current_code === $code) {
     exit;
 }
 
-$query = "SELECT COUNT(*) as count FROM customers WHERE customer_code = ?";
+$query = "SELECT COUNT(*) as count FROM products WHERE product_code = ?";
 $result = fetchOne($query, array($code));
 
 if ($result['success']) {

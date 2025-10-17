@@ -1,6 +1,6 @@
 <?php
 /**
- * MyShop - 거래처 추가
+ * MyShop - 상품 목록
  */
 
 define('MYSHOP_APP', true);
@@ -11,223 +11,184 @@ require_once '../includes/session.php';
 // 로그인 체크
 requireLogin();
 
-$page_title = '거래처 추가';
-$error_message = '';
-$form_data = array();
+$page_title = '상품 관리';
 
-// 다음 거래처 코드 자동 생성
-$next_code_query = "SELECT RIGHT('0000' + CAST(ISNULL(MAX(CAST(customer_code AS INT)), 0) + 1 AS VARCHAR), 4) AS next_code FROM customers";
-$result = fetchOne($next_code_query);
-$auto_customer_code = $result['success'] ? $result['data']['next_code'] : '0001';
+// 검색 처리
+$search_keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
+$success_message = isset($_GET['success']) ? $_GET['success'] : '';
+$error_message = isset($_GET['error']) ? $_GET['error'] : '';
 
-// 폼 제출 처리
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 폼 데이터 받기
-    $form_data = array(
-        'customer_code' => trim($_POST['customer_code'] ?? ''),
-        'customer_name' => trim($_POST['customer_name'] ?? ''),
-        'ceo_name' => trim($_POST['ceo_name'] ?? ''),
-        'business_number' => trim($_POST['business_number'] ?? ''),
-        'business_type' => trim($_POST['business_type'] ?? ''),
-        'business_item' => trim($_POST['business_item'] ?? ''),
-        'address' => trim($_POST['address'] ?? ''),
-        'phone' => trim($_POST['phone'] ?? ''),
-        'fax' => trim($_POST['fax'] ?? ''),
-        'mobile' => trim($_POST['mobile'] ?? ''),
-        'email' => trim($_POST['email'] ?? ''),
-        'manager_name' => trim($_POST['manager_name'] ?? ''),
-        'manager_contact' => trim($_POST['manager_contact'] ?? ''),
-        'notes' => trim($_POST['notes'] ?? '')
-    );
-    
-    // 유효성 검사
-    if (empty($form_data['customer_code'])) {
-        $error_message = '거래처 코드를 입력해주세요.';
-    } elseif (!preg_match('/^[0-9]{4}$/', $form_data['customer_code'])) {
-        $error_message = '거래처 코드는 4자리 숫자여야 합니다.';
-    } elseif (empty($form_data['customer_name'])) {
-        $error_message = '거래처명을 입력해주세요.';
-    } else {
-        // 코드 중복 체크
-        $check_query = "SELECT COUNT(*) as count FROM customers WHERE customer_code = ?";
-        $check_result = fetchOne($check_query, array($form_data['customer_code']));
-        
-        if ($check_result['success'] && $check_result['data']['count'] > 0) {
-            $error_message = '이미 사용 중인 거래처 코드입니다.';
-        } else {
-            // 거래처 추가
-            $insert_query = "INSERT INTO customers (
-                customer_code, customer_name, ceo_name, business_number, business_type, business_item,
-                address, phone, fax, mobile, email, manager_name, manager_contact, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            
-            $params = array(
-                $form_data['customer_code'],
-                $form_data['customer_name'],
-                $form_data['ceo_name'],
-                $form_data['business_number'],
-                $form_data['business_type'],
-                $form_data['business_item'],
-                $form_data['address'],
-                $form_data['phone'],
-                $form_data['fax'],
-                $form_data['mobile'],
-                $form_data['email'],
-                $form_data['manager_name'],
-                $form_data['manager_contact'],
-                $form_data['notes']
-            );
-            
-            $result = executeNonQuery($insert_query, $params);
-            
-            if ($result['success']) {
-                header('Location: list.php?success=added');
-                exit;
-            } else {
-                $error_message = '거래처 등록 중 오류가 발생했습니다.';
-            }
-        }
-    }
+// 상품 목록 조회
+$query = "SELECT 
+            product_code,
+            product_name,
+            product_spec,
+            standard_price,
+            stock_quantity,
+            image_url,
+            created_at
+          FROM products";
+
+$params = array();
+
+if (!empty($search_keyword)) {
+    $query .= " WHERE product_name LIKE ? OR product_code LIKE ? OR product_spec LIKE ?";
+    $search_param = '%' . $search_keyword . '%';
+    $params = array($search_param, $search_param, $search_param);
 }
 
-include '../includes/header.php';
+$query .= " ORDER BY product_code DESC";
+
+$result = fetchAll($query, $params);
+$products = $result['success'] ? $result['data'] : array();
+
+require_once '../includes/header.php';
 ?>
 
-<div class="container">
-    <div class="page-header">
-        <h2 class="page-title">거래처 추가</h2>
-        <a href="list.php" class="btn btn-outline">목록으로</a>
+<div class="page-header">
+    <h2 class="page-title">📦 상품 관리</h2>
+    <a href="add.php" class="btn btn-primary">+ 상품 추가</a>
+</div>
+
+<?php if ($success_message == 'added'): ?>
+    <div class="alert alert-success">
+        ✅ 상품이 성공적으로 등록되었습니다.
     </div>
+<?php elseif ($success_message == 'updated'): ?>
+    <div class="alert alert-success">
+        ✅ 상품 정보가 성공적으로 수정되었습니다.
+    </div>
+<?php elseif ($success_message == 'deleted'): ?>
+    <div class="alert alert-success">
+        ✅ 상품이 성공적으로 삭제되었습니다.
+    </div>
+<?php elseif ($error_message == 'has_transactions'): ?>
+    <div class="alert alert-error">
+        ❌ 거래내역이 있는 상품은 삭제할 수 없습니다.
+    </div>
+<?php elseif ($error_message == 'delete_failed'): ?>
+    <div class="alert alert-error">
+        ❌ 상품 삭제 중 오류가 발생했습니다.
+    </div>
+<?php endif; ?>
+
+<div class="section-box">
+    <!-- 검색 바 -->
+    <form method="GET" action="" class="search-bar">
+        <input 
+            type="text" 
+            name="search" 
+            class="form-control" 
+            placeholder="🔍 상품명, 상품코드, 규격으로 검색..."
+            value="<?php echo escape($search_keyword); ?>"
+        >
+        <button type="submit" class="btn btn-primary">검색</button>
+        <?php if (!empty($search_keyword)): ?>
+            <a href="list.php" class="btn btn-outline">초기화</a>
+        <?php endif; ?>
+    </form>
     
-    <?php if ($error_message): ?>
-        <div class="alert alert-error">
-            <?php echo escape($error_message); ?>
+    <!-- 상품 목록 -->
+    <?php if (count($products) > 0): ?>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">이미지</th>
+                        <th>상품코드</th>
+                        <th>상품명</th>
+                        <th>규격</th>
+                        <th class="text-right">기준단가</th>
+                        <th class="text-right">재고수량</th>
+                        <th class="text-center">재고상태</th>
+                        <th>등록일</th>
+                        <th class="text-center">관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($products as $product): ?>
+                        <tr>
+                            <td class="text-center">
+                                <?php if (!empty($product['image_url'])): ?>
+                                    <img src="<?php echo escape($product['image_url']); ?>" 
+                                         alt="<?php echo escape($product['product_name']); ?>"
+                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #e0e0e0;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div style="display: none; width: 50px; height: 50px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📦</div>
+                                <?php else: ?>
+                                    <div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📦</div>
+                                <?php endif; ?>
+                            </td>
+                            <td><strong><?php echo escape($product['product_code']); ?></strong></td>
+                            <td class="text-left">
+                                <strong><?php echo escape($product['product_name']); ?></strong>
+                            </td>
+                            <td><?php echo escape($product['product_spec'] ?? '-'); ?></td>
+                            <td class="text-right"><?php echo formatCurrency($product['standard_price']); ?></td>
+                            <td class="text-right">
+                                <strong style="<?php echo $product['stock_quantity'] < 0 ? 'color: #ef4444;' : ''; ?>">
+                                    <?php echo formatNumber($product['stock_quantity']); ?>
+                                </strong>
+                            </td>
+                            <td class="text-center">
+                                <?php if ($product['stock_quantity'] < 0): ?>
+                                    <span class="badge badge-danger">마이너스</span>
+                                <?php elseif ($product['stock_quantity'] == 0): ?>
+                                    <span class="badge badge-warning">재고없음</span>
+                                <?php else: ?>
+                                    <span class="badge badge-success">정상</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?php echo formatDateTime($product['created_at']); ?></td>
+                            <td class="table-actions">
+                                <a href="view.php?code=<?php echo $product['product_code']; ?>" 
+                                   class="btn btn-sm btn-info" 
+                                   title="상세보기">
+                                    📋
+                                </a>
+                                <a href="edit.php?code=<?php echo $product['product_code']; ?>" 
+                                   class="btn btn-sm btn-success" 
+                                   title="수정">
+                                    ✏️
+                                </a>
+                                <a href="delete.php?code=<?php echo $product['product_code']; ?>" 
+                                   class="btn btn-sm btn-danger" 
+                                   title="삭제"
+                                   onclick="return confirm('⚠️ 정말 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.');">
+                                    🗑️
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center" style="margin-top: 20px;">
+            <p class="text-muted">
+                총 <strong style="color: var(--primary-color);"><?php echo number_format(count($products)); ?>개</strong>의 상품
+            </p>
+        </div>
+    <?php else: ?>
+        <div class="empty-state">
+            <div class="icon">📦</div>
+            <p style="font-size: 16px; margin: 0;">
+                <?php if (!empty($search_keyword)): ?>
+                    '<strong><?php echo escape($search_keyword); ?></strong>' 검색 결과가 없습니다.
+                <?php else: ?>
+                    등록된 상품이 없습니다.<br>
+                    <small>새 상품을 추가해주세요.</small>
+                <?php endif; ?>
+            </p>
+            <?php if (empty($search_keyword)): ?>
+                <a href="add.php" class="btn btn-primary" style="margin-top: 20px;">
+                    + 첫 상품 추가하기
+                </a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
-    
-    <div class="section-box">
-        <form method="POST" action="">
-            <div class="form-grid">
-                <!-- 좌측 컬럼 -->
-                <div>
-                    <h3 style="margin-bottom: 20px; color: #667eea;">기본 정보</h3>
-                    
-                    <div class="form-group">
-                        <label for="customer_code" class="required">거래처 코드</label>
-                        <input 
-                            type="text" 
-                            id="customer_code" 
-                            name="customer_code" 
-                            class="form-control"
-                            maxlength="4"
-                            pattern="[0-9]{4}"
-                            value="<?php echo isset($form_data['customer_code']) ? escape($form_data['customer_code']) : $auto_customer_code; ?>"
-                            placeholder="4자리 숫자 (예: 0001)"
-                            required
-                        >
-                        <small style="color: #666; font-size: 12px;">자동생성: <?php echo $auto_customer_code; ?> (수정 가능)</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="customer_name" class="required">거래처명 (상호)</label>
-                        <input 
-                            type="text" 
-                            id="customer_name" 
-                            name="customer_name" 
-                            class="form-control"
-                            value="<?php echo $form_data['customer_name'] ?? ''; ?>"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="ceo_name">대표자명</label>
-                        <input 
-                            type="text" 
-                            id="ceo_name" 
-                            name="ceo_name" 
-                            class="form-control"
-                            value="<?php echo $form_data['ceo_name'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business_number">사업자등록번호</label>
-                        <input 
-                            type="text" 
-                            id="business_number" 
-                            name="business_number" 
-                            class="form-control"
-                            placeholder="000-00-00000"
-                            maxlength="12"
-                            value="<?php echo $form_data['business_number'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business_type">업태</label>
-                        <input 
-                            type="text" 
-                            id="business_type" 
-                            name="business_type" 
-                            class="form-control"
-                            placeholder="예: 제조업, 도소매업"
-                            value="<?php echo $form_data['business_type'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business_item">종목</label>
-                        <input 
-                            type="text" 
-                            id="business_item" 
-                            name="business_item" 
-                            class="form-control"
-                            placeholder="예: 전자제품, 의류"
-                            value="<?php echo $form_data['business_item'] ?? ''; ?>"
-                        >
-                    </div>
-                </div>
-                
-                <!-- 우측 컬럼 -->
-                <div>
-                    <h3 style="margin-bottom: 20px; color: #667eea;">연락처 정보</h3>
-                    
-                    <div class="form-group">
-                        <label for="phone">전화번호</label>
-                        <input 
-                            type="text" 
-                            id="phone" 
-                            name="phone" 
-                            class="form-control"
-                            placeholder="02-1234-5678"
-                            value="<?php echo $form_data['phone'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="fax">팩스번호</label>
-                        <input 
-                            type="text" 
-                            id="fax" 
-                            name="fax" 
-                            class="form-control"
-                            placeholder="02-1234-5679"
-                            value="<?php echo $form_data['fax'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="mobile">이동전화번호</label>
-                        <input 
-                            type="text" 
-                            id="mobile" 
-                            name="mobile" 
-                            class="form-control"
-                            placeholder="010-1234-5678"
-                            value="<?php echo $form_data['mobile'] ?? ''; ?>"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">이메일
+</div>
+
+<?php
+require_once '../includes/footer.php';
+?>

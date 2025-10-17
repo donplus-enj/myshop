@@ -34,11 +34,10 @@ if (!isLoggedIn()) {
     </a>
     
     <!-- 상품 관리 -->
-    <a href="products/list.php" class="menu-card disabled">
+    <a href="products/list.php" class="menu-card">
         <div class="icon">📦</div>
         <h3>상품 관리</h3>
         <p>상품 등록 및 관리</p>
-        <span class="coming-soon">준비중</span>
     </a>
     
     <!-- 입출고 관리 -->
