@@ -31,39 +31,6 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
  * 루트 경로 계산
  * 현재 파일의 위치에 따라 루트까지의 상대 경로 반환
  */
-function getBasePath_old() {
-    // 현재 스크립트의 경로 가져오기
-    $script_path = $_SERVER['SCRIPT_NAME'];
-    
-    // '/src/' 기준으로 분리
-    $parts = explode('/', trim($script_path, '/'));
-    
-    // 'src' 이후의 depth 계산
-    $depth = 0;
-    $found_src = false;
-    foreach ($parts as $part) {
-        if ($found_src && !empty($part)) {
-            $depth++;
-        }
-        if ($part === 'src') {
-            $found_src = true;
-        }
-    }
-    
-    // depth에 따라 '../' 반복
-    if ($depth === 0) {
-        return './';
-    } elseif ($depth === 1) {
-        return '../';
-    } else {
-        return str_repeat('../', $depth - 1);
-    }
-}
-
-/**
- * 루트 경로 계산
- * 현재 파일의 위치에 따라 루트까지의 상대 경로 반환
- */
 function getBasePath() {
     $script_name = $_SERVER['SCRIPT_NAME'];
     
@@ -93,19 +60,30 @@ function getBasePath() {
 $base_path = getBasePath();
 
 /**
- * 활성 메뉴 체크 함수
- * @param string $page 페이지명
- * @param string|null $dir 디렉토리명
+ * 활성 메뉴 체크 함수 (개선된 버전)
+ * @param string $page 페이지명 또는 디렉토리명
+ * @param string|null $specificPage 특정 페이지명 (선택사항)
  * @return string 'active' 또는 빈 문자열
  */
-function isActive($page, $dir = null) {
+function isActive($page, $specificPage = null) {
     global $current_page, $current_dir;
     
-    if ($dir) {
-        return ($current_dir === $dir) ? 'active' : '';
+    // 특정 페이지가 지정된 경우 (예: 'transactions', 'in_out.php')
+    if ($specificPage !== null) {
+        return ($current_dir === $page && $current_page === $specificPage) ? 'active' : '';
     }
     
-    return ($current_page === $page) ? 'active' : '';
+    // 디렉토리 체크 (예: 'customers', 'products')
+    if ($current_dir === $page) {
+        return 'active';
+    }
+    
+    // 페이지 체크 (예: 'index.php')
+    if ($current_page === $page) {
+        return 'active';
+    }
+    
+    return '';
 }
 ?>
 <!DOCTYPE html>
@@ -142,19 +120,19 @@ function isActive($page, $dir = null) {
                     <a href="<?php echo $base_path; ?>index.php" class="nav-link <?php echo isActive('index.php'); ?>">
                         🏠 홈
                     </a>
-                    <a href="<?php echo $base_path; ?>customers/list.php" class="nav-link <?php echo isActive('list.php', 'customers'); ?>">
+                    <a href="<?php echo $base_path; ?>customers/list.php" class="nav-link <?php echo isActive('customers'); ?>">
                         🏢 거래처
                     </a>
-                    <a href="<?php echo $base_path; ?>products/list.php" class="nav-link <?php echo isActive('list.php', 'products'); ?>">
+                    <a href="<?php echo $base_path; ?>products/list.php" class="nav-link <?php echo isActive('products'); ?>">
                         📦 상품
                     </a>
-                    <a href="<?php echo $base_path; ?>transactions/in_out.php" class="nav-link <?php echo isActive('in_out.php', 'transactions'); ?>">
+                    <a href="<?php echo $base_path; ?>transactions/in_out.php" class="nav-link <?php echo isActive('transactions', 'in_out.php'); ?>">
                         🚚 입출고
                     </a>
-                    <a href="<?php echo $base_path; ?>transactions/history.php" class="nav-link <?php echo isActive('history.php', 'transactions'); ?>">
+                    <a href="<?php echo $base_path; ?>transactions/history.php" class="nav-link <?php echo isActive('transactions', 'history.php'); ?>">
                         📋 거래조회
                     </a>
-                    <a href="<?php echo $base_path; ?>transactions/payment.php" class="nav-link <?php echo isActive('payment.php', 'transactions'); ?>">
+                    <a href="<?php echo $base_path; ?>transactions/payment.php" class="nav-link <?php echo isActive('transactions', 'payment.php'); ?>">
                         💰 입금/지출
                     </a>
                     <a href="<?php echo $base_path; ?>report.php" class="nav-link <?php echo isActive('report.php'); ?>">

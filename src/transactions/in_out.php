@@ -205,61 +205,30 @@ include '../includes/header.php';
                 </h3>
                 
                 <div class="form-group">
-                    <label class="required">거래 유형</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <label class="radio-card">
-                            <input 
-                                type="radio" 
-                                name="transaction_type" 
-                                value="IN"
-                                <?php echo (!isset($_POST['transaction_type']) || $_POST['transaction_type'] == 'IN') ? 'checked' : ''; ?>
-                                required
-                            >
-                            <span class="radio-label">
-                                <span class="radio-icon">📥</span>
-                                <span class="radio-text">입고</span>
-                            </span>
-                        </label>
-                        
-                        <label class="radio-card">
-                            <input 
-                                type="radio" 
-                                name="transaction_type" 
-                                value="OUT"
-                                <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'OUT') ? 'checked' : ''; ?>
-                            >
-                            <span class="radio-label">
-                                <span class="radio-icon">📤</span>
-                                <span class="radio-text">출고</span>
-                            </span>
-                        </label>
-                        
-                        <label class="radio-card">
-                            <input 
-                                type="radio" 
-                                name="transaction_type" 
-                                value="IN_RETURN"
-                                <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'IN_RETURN') ? 'checked' : ''; ?>
-                            >
-                            <span class="radio-label">
-                                <span class="radio-icon">↩️</span>
-                                <span class="radio-text">입고반품</span>
-                            </span>
-                        </label>
-                        
-                        <label class="radio-card">
-                            <input 
-                                type="radio" 
-                                name="transaction_type" 
-                                value="OUT_RETURN"
-                                <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'OUT_RETURN') ? 'checked' : ''; ?>
-                            >
-                            <span class="radio-label">
-                                <span class="radio-icon">↪️</span>
-                                <span class="radio-text">출고반품</span>
-                            </span>
-                        </label>
-                    </div>
+                    <label for="transaction_type" class="required">거래 유형</label>
+                    <select 
+                        id="transaction_type" 
+                        name="transaction_type" 
+                        class="form-control"
+                        required
+                        style="font-size: 16px; padding: 12px; font-weight: 600;"
+                    >
+                        <option value="IN" <?php echo (!isset($_POST['transaction_type']) || $_POST['transaction_type'] == 'IN') ? 'selected' : ''; ?>>
+                            📥 입고
+                        </option>
+                        <option value="OUT" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'OUT') ? 'selected' : ''; ?>>
+                            📤 출고
+                        </option>
+                        <option value="IN_RETURN" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'IN_RETURN') ? 'selected' : ''; ?>>
+                            ↩️ 입고반품
+                        </option>
+                        <option value="OUT_RETURN" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'OUT_RETURN') ? 'selected' : ''; ?>>
+                            ↪️ 출고반품
+                        </option>
+                    </select>
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                        💡 입고/출고반품은 재고 증가, 출고/입고반품은 재고 감소
+                    </small>
                 </div>
                 
                 <div class="form-group">
@@ -433,60 +402,6 @@ include '../includes/header.php';
 </div>
 
 <style>
-.radio-card {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: white;
-}
-
-.radio-card:hover {
-    border-color: #667eea;
-    background-color: #f8f9ff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-}
-
-.radio-card input[type="radio"] {
-    margin-right: 12px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.radio-card input[type="radio"]:checked + .radio-label {
-    color: #667eea;
-}
-
-.radio-card input[type="radio"]:checked ~ * {
-    color: #667eea;
-}
-
-.radio-card.selected {
-    border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    flex: 1;
-}
-
-.radio-icon {
-    font-size: 24px;
-}
-
-.radio-text {
-    font-size: 16px;
-}
-
 .product-item:hover {
     border-color: #667eea !important;
     background-color: #f8f9ff;
@@ -499,21 +414,27 @@ include '../includes/header.php';
     pointer-events: none;
 }
 
+/* 거래 유형 선택 박스 강조 스타일 */
+#transaction_type {
+    border: 2px solid #667eea;
+    background: linear-gradient(to right, #ffffff 0%, #f8f9ff 100%);
+    transition: all 0.3s;
+}
+
+#transaction_type:hover {
+    border-color: #764ba2;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+}
+
+#transaction_type:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .radio-card {
-        padding: 10px;
-    }
-    
-    .radio-icon {
-        font-size: 20px;
-    }
-    
-    .radio-text {
-        font-size: 14px;
     }
 }
 </style>
