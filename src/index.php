@@ -41,19 +41,17 @@ if (!isLoggedIn()) {
     </a>
     
     <!-- 입출고 관리 -->
-    <a href="transactions/in_out.php" class="menu-card disabled">
+    <a href="transactions/in_out.php" class="menu-card">
         <div class="icon">📊</div>
         <h3>입출고 관리</h3>
         <p>입고/출고/반품 처리</p>
-        <span class="coming-soon">준비중</span>
     </a>
     
     <!-- 거래내역 조회 -->
-    <a href="transactions/history.php" class="menu-card disabled">
+    <a href="transactions/history.php" class="menu-card">
         <div class="icon">📋</div>
         <h3>거래조회</h3>
         <p>거래내역 조회 및 출력</p>
-        <span class="coming-soon">준비중</span>
     </a>
     
     <!-- 수금/지급 관리 -->
