@@ -213,10 +213,10 @@ include '../includes/header.php';
                         required
                         style="font-size: 16px; padding: 12px; font-weight: 600;"
                     >
-                        <option value="IN" <?php echo (!isset($_POST['transaction_type']) || $_POST['transaction_type'] == 'IN') ? 'selected' : ''; ?>>
+                        <option value="IN" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'IN') ? 'selected' : ''; ?>>
                             📥 입고
                         </option>
-                        <option value="OUT" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'OUT') ? 'selected' : ''; ?>>
+                        <option value="OUT" <?php echo (!isset($_POST['transaction_type']) || $_POST['transaction_type'] == 'OUT') ? 'selected' : ''; ?>>
                             📤 출고
                         </option>
                         <option value="IN_RETURN" <?php echo (isset($_POST['transaction_type']) && $_POST['transaction_type'] == 'IN_RETURN') ? 'selected' : ''; ?>>
